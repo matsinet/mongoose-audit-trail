@@ -280,6 +280,15 @@ const plugin = function lastModifiedPlugin(schema, opts = {}) {
       .catch(next);
   });
 
+  schema.pre("findByIdAndUpdate", function(next) {
+    if (checkRequired(opts, this)) {
+      return next();
+    }
+    saveDiffs(this, opts, "update")
+      .then(() => next())
+      .catch(next);
+  });
+
   schema.pre("update", function(next) {
     if (checkRequired(opts, this)) {
       return next();
@@ -299,6 +308,15 @@ const plugin = function lastModifiedPlugin(schema, opts = {}) {
   });
 
   schema.pre("remove", function(next) {
+    if (checkRequired(opts, this)) {
+      return next();
+    }
+    saveDiffObject(this, this, {}, opts, null, "remove")
+      .then(() => next())
+      .catch(next);
+  });
+
+  schema.pre("findByIdAndRemove", function(next) {
     if (checkRequired(opts, this)) {
       return next();
     }
